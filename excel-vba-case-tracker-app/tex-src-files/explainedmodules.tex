@@ -270,3 +270,114 @@ Diğer servis ve event modüllerinden tek satırla çağrılarak yumuşak panel 
     
     Tüm panel oluşturma, temizleme, boyutlandırma ve erişim kısıtlama süreçlerini tek bir merkezde toplayarak projenin Modüler Yönetim, Bellek Güvenliği ve Kullanıcı Deneyimi (UX) standartlarını teminat altına alır.
 \end{tcolorbox}
+
+
+\newpage
+
+% ==========================================
+% BÖLÜM 4.5: MOD_UI_EVENTS (ARAYÜZ OLAY VE ETKİLEŞİM HANDLER KATMANI)
+% ==========================================
+
+\section{\texttt{mod\_UI\_Events}}
+
+\texttt{mod\_UI\_Events}, kullanıcı arayüzündeki (UI) etkileşimleri, tıklama olaylarını (\textit{Events}) ve form girdilerini karşılayarak arka plandaki iş mantığına (\textit{Business Logic}) aktaran olay işleyici (\textit{Event Handler}) servis katmanıdır.
+
+Sınıf modülleri (\texttt{clsDynamicButton}) üzerinden gelen tıklama sinyalleri, butonun içerisinde bulunduğu üst panel bağlamına (\texttt{MSForms.Frame}) göre bu modüldeki ilgili prosedürlere aktarılır. Modül, gelen parametreleri ve mevcut uygulama durumunu değerlendirerek yönlendirme ve veri işleme adımlarını yürütür.
+
+Modülün üstlendiği temel kritik görevler şunlardır:
+
+\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+    \item \textbf{Dinamik Akış ve Yönlendirme Yönetimi:} Kullanıcının panel geçiş taleplerinde ("İleri", "Geri") mevcut iş durumunu kontrol ederek doğru panellere geçişi sağlar.
+    \item \textbf{Veri Güncelleme Operasyonlarının Tetiklenmesi:} "Güncelle" butonlarına basıldığında, aktif panel üzerindeki veri bileşenlerini okur ve yazma operasyonu için \texttt{mod\_Services} katmanına iletir.
+    \item \textbf{Kullanıcı Girdisi Doğrulama (Validation):} Geçmiş ay seçimi ekranlarında girilen verilerin tiplerini denetleyerek hatalı veri girişini engeller.
+    \item \textbf{Arayüz Durum Güncellemeleri:} İşlem tamamlandığında ilgili butonların renklerini ve erişim izinlerini dinamik olarak günceller.
+\end{itemize}
+
+\vspace{0.15cm}
+
+\begin{infobox}{\faHandPointer\ Mimari Soyutlama ve Trafik Kontrol Rolü}
+\texttt{mod\_UI\_Events} modülü bünyesinde arayüz çizim kodlarını veya veritabanı okuma/yazma algoritmalarını barındırmaz. Sadece kullanıcı isteklerini doğru servislere ileten bir \textbf{Trafik Kontrolörü} gibi çalışır.
+\end{infobox}
+
+\vspace{0.15cm}
+
+\textbf{\textcolor{primary}{1. Olay Karşılama ve Akış Denetimi Mekanizması}}
+
+Aşağıdaki kod parçası, panel olaylarının (\texttt{HandleLoginPanelEvents}, \texttt{HandleSelectPreviousMonthEvents}) nasıl yakalandığını ve iş akışına göre yönlendirildiğini göstermektedir:
+
+\begin{lstlisting}[caption={Panel Geçiş ve Akış Kontrol Mantığı}]
+Public Sub HandleLoginPanelEvents(buttonName As String, parentFrame As MSForms.Frame)
+    If buttonName = "btn_ToOSM" Then
+        Dim hasOpen As Boolean, hasClosed As Boolean
+        hasOpen = mod_Services.HasAnyOpenCase()
+        hasClosed = mod_Services.HasAnyClosedCase()
+        
+        If Not hasOpen And Not hasClosed Then
+            MsgBox MSG_NO_SHEETS_TO_PROCESS, vbInformation, MSG_TITLE_INFO
+        ElseIf Not hasOpen And hasClosed Then
+            mod_UI_Manager.SwitchTo "Closed"
+        Else
+            mod_UI_Manager.SwitchTo "OSM"
+        End If
+    ElseIf buttonName = "btn_ToPreviousMonth" Then
+        ' ... Geckmis ay tarama kontrolleri ...
+    End If
+End Sub
+\end{lstlisting}
+
+\newpage
+
+\begin{lstlisting}[caption={Girdi Doğrulama ve İkincil Akış Yönetimi}]
+Public Sub HandleSelectPreviousMonthEvents(buttonName As String, parentFrame As MSForms.Frame)
+    Dim txtYear As MSForms.TextBox, cmbMonth As MSForms.ComboBox
+    
+    If buttonName = "btn_NextFromSelectMonth" Then
+        Set txtYear = parentFrame.Controls("txt_YearInput")
+        Set cmbMonth = parentFrame.Controls("cmb_MonthSelect")
+        
+        If cmbMonth.ListIndex <> -1 And IsNumeric(txtYear.Text) And Len(Trim(txtYear.Text)) = 4 Then
+            SelectedPreviousYear = CInt(txtYear.Text)
+            SelectedPreviousMonth = cmbMonth.ListIndex + 1
+            mod_UI_Manager.SwitchTo "PrevMonthClosed"
+        Else
+            MsgBox MSG_INVALID_YEAR_INPUT, vbExclamation, MSG_TITLE_ERROR
+        End If
+    End If
+End Sub
+\end{lstlisting}
+
+\vspace{0.3cm}
+
+\textbf{\textcolor{primary}{2. Veritabanı Yazma Tetikleme ve Görsel Güncelleme}}
+
+Veri kaydetme butonlarına basıldığında çalışan özel fonksiyonlar (\texttt{HandleUpdateOpen}) ve işlem sonrasında buton görsellerini güncelleyen yardımcı prosedür aşağıdadır:
+
+\begin{lstlisting}[caption={Veri Yazma Tetikleme ve Buton Durum Güncelleme}]
+Private Sub HandleUpdateOpen()
+    Dim ws As Worksheet, realFrame As MSForms.Frame
+    Set ws = ThisWorkbook.Sheets(MAIN_SHEET_NAME)
+    Set realFrame = ws.OLEObjects("pan_Open").Object
+    
+    If mod_Services.ExecuteDatabaseWrite(realFrame.Controls("lst_OpenStatus"), cellColIdx:=4, valColIdx:=3, sheetNameColIdx:=0) Then
+        SetUpdateButtonSuccess realFrame.Controls("updateOpen"), realFrame.Controls("nextOpenButton")
+        MsgBox MSG_OPEN_SAVE_SUCCESS, vbInformation, MSG_TITLE_SUCCESS
+    End If
+End Sub
+
+Private Sub SetUpdateButtonSuccess(btnUpdate As MSForms.CommandButton, btnNext As MSForms.CommandButton)
+    btnUpdate.BackColor = RGB(46, 204, 113)
+    btnUpdate.Caption = BTN_CAPTION_UPDATED
+    btnUpdate.Enabled = False
+    btnNext.Enabled = True
+    btnNext.BackColor = COLOR_GREEN
+    btnNext.ForeColor = COLOR_WHITE
+End Sub
+\end{lstlisting}
+
+\vspace{0.4cm}
+
+
+\begin{tcolorbox}[colback=yellow!15,colframe=orange!80!black,leftrule=3.5pt,boxrule=0.4pt,top=5pt,bottom=5pt]
+    \textbf{\textcolor{orange!80!black}{\faInfoCircle\ mod\_UI\_Events Genel Özet ve Mimari Rolü:}}\\
+    \small \texttt{mod\_UI\_Events}, arayüz ile iş katmanı arasında gevşek bağlılık (\textit{Loose Coupling}) ilkesini uygular. Olay bazlı tetiklemeleri merkezi bir yapıda toplayarak uygulamanın bakımını kolaylaştırır, kod tekrarlarını önler ve kullanıcı etkileşimlerinin güvenli bir iş akışı çerçevesinde gerçekleşmesini teminat altına alır.
+\end{tcolorbox}
