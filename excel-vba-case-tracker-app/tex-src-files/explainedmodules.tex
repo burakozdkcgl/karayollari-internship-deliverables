@@ -1,0 +1,96 @@
+\chapter{Modül Detayları}
+
+% ==========================================
+% BÖLÜM 4.1: THISWORKBOOK (ÇALIŞMA KİTABI ETKİLEŞİM KATMANI)
+% ==========================================
+
+\section{\texttt{ThisWorkbook}}
+
+\texttt{ThisWorkbook}, Excel VBA mimarisinde çalışma kitabının yaşam döngüsünü (\textit{Lifecycle}) ve global olayları (\textit{Workbook-Level Events}) dinleyen yerleşik sınıf modülüdür. Projede uygulamanın otomatik ilklendirilmesini (\textit{Initialization}) ve bellek değişkenlerinin hazırlanmasını sağlar.
+
+Excel açıldığında grafik motoru, OLE bileşenleri ve Active Document yapısı henüz yüklenmemiş olabilir. Bu süreçte doğrudan makro çalıştırmak veya arayüze OLE nesneleri çizmek; grafik kaymalarına ve Korumalı Görünüm (\textit{Protected View}) modunda uygulamanın aniden çökmesine neden olur.
+
+\texttt{ThisWorkbook} modülü, söz konusu kararsızlığı önlemek adına **Asenkron Gecikmeli Başlatma (Asynchronous Delayed Execution)** mimari desenini uygular:
+
+\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{1pt}
+    \item \textbf{Yerleşik Olay Yakalama (\texttt{Workbook\_Open}):} Otomatik tetiklenen giriş noktasıdır (\textit{Entry Point}).
+    \item \textbf{İşlem Oluğu Sıfırlama (\texttt{DoEvents}):} Bekleyen tüm grafik yenileme ve ekran çizim olaylarını zorunlu kılar.
+    \item \textbf{Zamanlanmış Tetikleme (\texttt{Application.OnTime}):} Arayüz kurma fonksiyonu olan \texttt{InitializeAppUI} prosedürünü 1 saniyelik mikro gecikmeyle Excel yürütme kuyruğuna kaydeder.
+\end{itemize}
+
+\vspace{0.15cm}
+
+\begin{infobox}{\faClock\ Asenkron Başlatmanın Sistem Performansına Etkisi}
+\texttt{Application.OnTime Now + TimeValue("00:00:01"), "InitializeAppUI"} kullanımı, dosya açılışında Excel UI motorunun tamamen stabil hale gelmesini bekler. Bu sayede servisler ve dinamik butonlar çökme riski olmadan sıfır hatayla ilklendirilir.
+\end{infobox}
+
+\vspace{0.15cm}
+
+Aşağıdaki kod bloğu, projedeki \texttt{ThisWorkbook} sınıf modülünün tam yapısını içermektedir:
+
+\begin{lstlisting}[caption={ThisWorkbook Sınıf Modülü Kod Yapısı}]
+'*****************************************************************************
+' Class: ThisWorkbook
+' Purpose: Standard class module that handles workbook-level events.
+'*****************************************************************************
+
+Private Sub Workbook_Open()
+    DoEvents
+    Application.OnTime Now + TimeValue("00:00:01"), "InitializeAppUI"
+End Sub
+\end{lstlisting}
+
+\newpage
+
+% ==========================================
+% BÖLÜM 4.2: CLSDYNAMICBUTTON (DİNAMİK NESNE TABANLI OLAY KONTROLÜ)
+% ==========================================
+
+\section{\texttt{clsDynamicButton}}
+
+\texttt{clsDynamicButton}, çalışma zamanında (\textit{Runtime}) üretilen butonların tıklanma olaylarını (\texttt{Click Event}) Nesne Tabanlı Programlama (OOP) prensipleri doğrultusunda dinamik olarak yakalayan özel bir Sınıf Modülüdür (\textit{Class Module}).
+
+UserForm kullanılmayan mimarilerde arayüz elemanları doğrudan \texttt{Worksheet} üzerine çizilir. Ancak dinamik eklenen bir \texttt{MSForms.CommandButton} nesnesinin statik bir tıklama prosedürü bulunmaz. Bu kısıtlamayı aşmak adına projedeki her bir dinamik buton, \texttt{clsDynamicButton} sınıfından türetilen bir nesneye bağlanır ve bellek ömrünü uzatmak için global bir koleksiyonda saklanır.
+
+Sınıf içerisindeki \texttt{WithEvents} bildirimi, buton etkileşimlerini anlık dinler. Tıklama anında izlenen işlem adımları:
+
+\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{1pt}
+    \item \textbf{Referans ve Kapsayıcı Tespiti:} Tıklanan buton örneği yakalanır ve üst paneli (\texttt{MSForms.Frame}) doğrulanır.
+    \item \textbf{Olay Delegasyonu:} Panelin adına göre (\texttt{pan\_Login}, \texttt{pan\_OSM} vb.) tetiklenecek yönlendirme \texttt{mod\_UI\_Events} modülündeki handler fonksiyonlarına aktarılır.
+\end{itemize}
+
+\vspace{0.15cm}
+
+\begin{warningbox}{\faExclamationTriangle\ Bellek Yönetimi ve Nesne Yaşam Ömrü (Garbage Collection)}
+VBA bellek yöneticisi, referansı tutulmayan sınıf örneklerini anında siler. Dinamik butonların tıklama olaylarının aktif kalması için \texttt{clsDynamicButton} örneklerinin \texttt{ButtonCollection} koleksiyonuna \texttt{Add} metoduyla eklenmesi kritik önem taşır.
+\end{warningbox}
+
+\vspace{0.15cm}
+
+Aşağıdaki kod bloğu, dinamik buton olaylarını dinleyen ve ilgili UI panellerine yönlendiren sınıf yapısını özetlemektedir:
+
+\begin{lstlisting}[caption={clsDynamicButton Sınıf Modülü Kod Yapısı}]
+'*****************************************************************************
+' Class: clsDynamicButton
+' Purpose: This class is used to handle events for dynamically created buttons.
+'*****************************************************************************
+
+Public WithEvents DynamicButton As MSForms.CommandButton
+
+Private Sub DynamicButton_Click()
+    Dim parentFrame As MSForms.Frame
+    
+    On Error Resume Next
+    Set parentFrame = DynamicButton.Parent
+    On Error GoTo 0
+
+    If parentFrame Is Nothing Then Exit Sub
+
+    Select Case parentFrame.Name
+        Case "pan_Login":    mod_UI_Events.HandleLoginPanelEvents DynamicButton.Name, parentFrame
+        Case "pan_OSM":      mod_UI_Events.HandleOSMPanelEvents DynamicButton.Name, parentFrame
+        Case "pan_Open":     mod_UI_Events.HandleOpenPanelEvents DynamicButton.Name, parentFrame
+        ' . . . (pan_Closed, pan_PreviousMonth, pan_SelectPreviousMonth, ....)
+    End Select
+End Sub
+\end{lstlisting}
