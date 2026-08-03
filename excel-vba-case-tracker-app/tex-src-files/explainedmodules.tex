@@ -94,3 +94,59 @@ Private Sub DynamicButton_Click()
     End Select
 End Sub
 \end{lstlisting}
+
+
+% ==========================================
+% BÖLÜM 4.3: MOD_CONFIG (GLOBAL YAPILANDIRMA VE SABİTLER)
+% ==========================================
+
+\section{\texttt{mod\_Config}}
+
+\texttt{mod\_Config}, uygulamanın tüm merkezi sabitlerini, metinsel ifadelerini, renk paletini ve veritabanı sütun eşlemelerini bünyesinde barındıran standart kod modülüdür (\textit{Standard Module}). Kod karmaşıklığını önlemek ve bakımı kolaylaştırmak adına proje içerisindeki hiçbir fonksiyona sert kodlanmış (\textit{Hardcoded}) metin veya sayısal değer yazılmamıştır.
+
+Gelecekte projede yapılabilecek güncellemeler doğrudan bu modül üzerinden yönetilir:
+
+\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{1pt}
+    \item \textbf{Arayüz Metinleri ve Açılır Pencereler (Pop-up):} Arayüzdeki buton yazıları (\texttt{BTN\_CAPTION}), panel başlıkları (\texttt{LBL\_TITLE}) veya kullanıcıya gösterilen tüm uyarı/bilgi bildirim mesajları (\texttt{MSG\_*}) değiştirilmek istendiğinde yalnızca bu modüldeki ilgili sabitler güncellenir.
+    \item \textbf{Veritabanı ve Sütun Yapısı Değişiklikleri:} İlerleyen süreçte \texttt{ARIZA}, \texttt{BAKIM} veya \texttt{GECENAY} sayfalarında sütun yerleri veya aranan metin bağlamları değişirse; \texttt{DB\_*}, \texttt{CLOSED\_*} ve \texttt{PREV\_MONTH\_*} grubu altında tanımlanan sütun harfleri (\texttt{"A"}, \texttt{"D"}, \texttt{"K"} vb.) kolayca revize edilebilir.
+\end{itemize}
+
+\vspace{0.15cm}
+
+\begin{infobox}{\faCogs\ Merkezi Yönetim ve Bakım Kolaylığı}
+Uygulamanın renk paleti (\texttt{COLOR\_GREEN}, \texttt{COLOR\_RED}), panel boyutları (\texttt{PANEL\_WIDTH}) ve dinamik buton referanslarını tutan global \texttt{ButtonCollection} koleksiyonu bu modülde tanımlanarak projenin modülerliği garanti altına alınmıştır.
+\end{infobox}
+
+\vspace{0.15cm}
+
+Aşağıdaki kod bloğu, \texttt{mod\_Config} modülünün kategorize edilmiş temsilî yapısını göstermektedir:
+
+\begin{lstlisting}[caption={mod\_Config Modülü Sabit ve Yapılandırma Tanımları}]
+'*****************************************************************************
+' Module: mod_Config
+' Purpose: Global configuration settings, constants, and variables.
+'*****************************************************************************
+
+' 1. SAYFA VE VERİTABANI İSİMLERİ (ARIZA, BAKIM, GECENAY)
+Public Const MAIN_SHEET_NAME           As String = "Yenile"
+Public Const PREVIOUS_MONTH_SHEET_NAME As String = "GECENAY"
+Public Const DATABASE_SHEET_NAME_ARIZA As String = "ARIZA"
+Public Const DATABASE_SHEET_NAME_BAKIM As String = "BAKIM"
+
+' 2. VERİTABANI SÜTUN EŞLEMELERİ (COLUMN MAP)
+Public Const DB_OSM_DATES_START_COL As String = "A"
+Public Const DB_OPEN_CELL_COL       As String = "D"
+Public Const DB_CLOSED_NAME_COL     As String = "B"
+Public Const ALL_CASES_ASSIGNED_COL As String = "K"
+' . . . (Diğer sütun ve hücre adres tanımlamaları)
+
+' 3. POP-UP BİLDİRİM VE UYARI MESAJLARI (MESSAGES)
+Public Const MSG_OPEN_SAVE_SUCCESS   As String = "Açık kayıt sayıları veritabanına kaydedildi."
+Public Const MSG_ALL_OPERATIONS_COMPLETED As String = "Tüm güncelleme işlemleri başarıyla tamamlandı!"
+' . . . (Diğer bildirim ve hata mesajları)
+
+' 4. GLOBAL DEĞİŞKENLER VE ETKİLEŞİM KOLEKSİYONU
+Public ButtonCollection As New Collection
+\end{lstlisting}
+
+
