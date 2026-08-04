@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verified</title>
+    <title>KGM Portal</title>
     <style>
         * {
             margin: 0;
@@ -12,34 +12,100 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
+        /* Prevent all scrolling on html and body */
+        html, body {
+            width: 100%;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            overflow: hidden !important;
+        }
+
+        /* Background matching style.css exactly */
         body {
             background-color: #0f0a07;
             color: #ffffff;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle at 50% 50%, #291203 0%, #170b04 50%, #0f0a07 100%);
+            background: radial-gradient(circle at 75% 50%, #291203 0%, #170b04 50%, #0f0a07 100%);
+            position: relative;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
-        .welcome-card {
-            border: 1px solid rgba(226, 226, 229, 0.2);
-            padding: 50px 70px;
-            text-align: center;
-            background: rgba(23, 11, 4, 0.6);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        /* Highway Perspective Lines Background from style.css */
+        .highway-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: 
+                linear-gradient(90deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(500px) rotateX(60deg) translateY(-30%) translateZ(-100px);
+            opacity: 0.25;
+            z-index: 0;
+            pointer-events: none;
+            animation: roadMove 25s linear infinite;
+        }
+
+        @keyframes roadMove {
+            from { background-position: 0 0; }
+            to { background-position: 0 600px; }
+        }
+
+        /* Pure Black Dashboard Panel */
+        .dashboard-card {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            max-width: 920px;
+            height: 420px; /* Reduced fixed height to fit inside viewport without scrolling */
+            border: 1px solid rgba(226, 226, 229, 0.15);
+            background: #080808; /* Pure dark/black background */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Dynamic Content Area */
+        .content-area {
+            flex: 1;
+            padding: 30px 35px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .tab-content {
+            display: none;
+            height: 100%;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main Tab Layout */
+        .main-tab-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
         }
 
         .welcome-title {
-            font-size: 2rem;
+            font-size: 1.7rem;
             font-weight: 400;
             letter-spacing: 1px;
             color: #e2e2e5;
+            margin-bottom: 10px;
         }
 
         .welcome-name {
@@ -48,13 +114,14 @@
         }
 
         .btn-logout {
+            align-self: flex-start;
             padding: 10px 24px;
             background: transparent;
-            border: 1px solid rgba(226, 226, 229, 0.4);
+            border: 1px solid rgba(226, 226, 229, 0.3);
             color: #ffffff;
             cursor: pointer;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -63,31 +130,217 @@
         .btn-logout:hover {
             background: #ffffff;
             color: #0f0a07;
+            border-color: #ffffff;
+        }
+
+        /* Tab Typography */
+        .tab-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(226, 226, 229, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .tab-description {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+
+        /* Right Side Navigation Sidebar */
+        .nav-sidebar {
+            width: 220px;
+            border-left: 1px solid rgba(226, 226, 229, 0.12);
+            background: #030303;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            padding: 15px 18px;
+            color: #777777;
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(226, 226, 229, 0.05);
+            border-right: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-item:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+            border-right: 3px solid #ffffff;
+        }
+
+        .admin-badge {
+            font-size: 0.6rem;
+            padding: 2px 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(226, 226, 229, 0.3);
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        /* Hidden by default, toggled via JS for Admin users */
+        .admin-only {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="welcome-card">
-        <h1 class="welcome-title">Welcome, <span class="welcome-name" id="userName">User</span>!</h1>
-        <a href="/logout" class="btn-logout">Logout</a>
+    <!-- Animated Perspective Lines Background -->
+    <div class="highway-lines"></div>
+
+    <!-- Main Dashboard Card -->
+    <div class="dashboard-card">
+        
+        <!-- Left Side Dynamic Content Area -->
+        <main class="content-area">
+            
+            <!-- MAIN Tab -->
+            <div id="main" class="tab-content active">
+                <div class="main-tab-wrapper">
+                    <div>
+                        <h1 class="welcome-title">Welcome, <span class="welcome-name" id="userName">User</span>!</h1>
+                        <p class="tab-description">General overview and system control panel.</p>
+                    </div>
+                    <a href="/logout" class="btn-logout">Logout</a>
+                </div>
+            </div>
+
+            <!-- USERS Tab -->
+            <div id="users" class="tab-content">
+                <div>
+                    <h2 class="tab-title">Users</h2>
+                    <p class="tab-description">Access active user directory, personnel contacts, and departmental roles.</p>
+                </div>
+            </div>
+
+            <!-- ROAD & TRAFFIC Tab -->
+            <div id="road-status" class="tab-content">
+                <div>
+                    <h2 class="tab-title">Road & Traffic</h2>
+                    <p class="tab-description">Monitor real-time road conditions, active maintenance works, and closures.</p>
+                </div>
+            </div>
+
+            <!-- FLEET MANAGEMENT Tab -->
+            <div id="fleet" class="tab-content">
+                <div>
+                    <h2 class="tab-title">Fleet Management</h2>
+                    <p class="tab-description">Track heavy machinery, maintenance vehicles, and operational status in real time.</p>
+                </div>
+            </div>
+
+            <!-- INCIDENTS & REQUESTS Tab -->
+            <div id="incidents" class="tab-content">
+                <div>
+                    <h2 class="tab-title">Incidents & Requests</h2>
+                    <p class="tab-description">Review field notifications, emergency reports, and maintenance request tickets.</p>
+                </div>
+            </div>
+
+            <!-- SYSTEM LOGS Tab (Admin Only) -->
+            <div id="system-logs" class="tab-content">
+                <div>
+                    <h2 class="tab-title">System Logs</h2>
+                    <p class="tab-description">Inspect administrative action logs, security audits, and system access history.</p>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Right Side Navigation Sidebar -->
+        <nav class="nav-sidebar">
+            <div class="nav-item active" onclick="switchTab('main', this)">
+                <span>Main</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('users', this)">
+                <span>Users</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('road-status', this)">
+                <span>Road & Traffic</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('fleet', this)">
+                <span>Fleet Management</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('incidents', this)">
+                <span>Incidents & Requests</span>
+            </div>
+            <!-- Admin Only Nav Item -->
+            <div class="nav-item admin-only" onclick="switchTab('system-logs', this)">
+                <span>Admin Panel</span>
+                <span class="admin-badge">LOGS</span>
+            </div>
+        </nav>
+
     </div>
 
     <script>
-        // Fetch logged-in user info when the DOM content is loaded
+        // Tab Switcher Function
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // Dynamic User Loading & Admin Authorization
         window.addEventListener('DOMContentLoaded', () => {
             fetch('/api/user-info')
-                .then(response => response.text())
-                .then(name => {
-                    if (name && name.trim() !== '') {
-                        document.getElementById('userName').textContent = name;
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.name) {
+                        document.getElementById('userName').textContent = data.name;
+                        
+                        // Show Admin Panel tab if user role is admin
+                        if (data.role === 'admin') {
+                            document.querySelectorAll('.admin-only').forEach(el => {
+                                el.style.display = 'flex';
+                            });
+                        }
                     } else {
-                        // Redirect unauthenticated users to the index page
                         window.location.href = '/index.html';
                     }
                 })
                 .catch(() => {
-                    window.location.href = '/index.html';
+                    // Fallback for plain text response
+                    fetch('/api/user-info')
+                        .then(res => res.text())
+                        .then(name => {
+                            if (name && name.trim() !== '') {
+                                document.getElementById('userName').textContent = name;
+                            } else {
+                                window.location.href = '/index.html';
+                            }
+                        });
                 });
         });
     </script>
