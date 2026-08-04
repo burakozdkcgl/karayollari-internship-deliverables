@@ -1,0 +1,211 @@
+% ==========================================
+% BÖLÜM 5: GELİŞTİRİCİ VE KATKI SAĞLAMA REHBERİ
+% ==========================================
+\chapter{Geliştirici Rehberi}
+
+Bu bölüm, uygulamanın gelecekte yeni özelliklerle genişletilmesi, değişen kurum içi rapor yapılarına kolayca adapte edilmesi, veritabanı yapılarının güncellenmesi ve mimariye yeni dinamik panellerin eklenmesi süreçlerinde takip edilmesi gereken standartları detaylandırmaktadır.
+
+Uygulamanın sürdürülebilir kalması için geliştiricilerin aşağıda yer alan 4 temel senaryoyu ve katmanlı mimari kurallarını adım adım uygulaması büyük önem taşımaktadır.
+
+\vspace{0.4cm}
+
+% ==========================================
+% SENARYO 1: RAPOR BİÇİMİ / SÜTUN DEĞİŞİKLİĞİ
+% ==========================================
+\section{Senaryo 1: Gelen Rapor Biçimi veya Sütun Yapısı Değişirse}
+
+Sistemdeki en büyük mimari avantaj, kod satırlarına sert biçimde yazılmış (\textit{Hardcoded}) sayfa/sütun isimlerinin veya dinamik metinlerin bulunmamasıdır. Kurum içi raporlarda sütun harfleri, sayfa isimleri veya vaka durum başlıkları değiştiğinde izlenecek adımlar aşağıda detaylandırılmıştır:
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{1. Yapılandırma Modülüne (\texttt{mod\_Config}) Erişin:}}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item Klavyeden \textbf{\texttt{Alt + F11}} kısayol tuşlarına basarak VBA Editörüne girin ve sol menüden \texttt{mod\_Config} modülünü açın.
+    \item Tüm sistem sabitlerinin kategorize edildiği bu alanda sadece ilgili sabit değerini güncelleyin.
+\end{itemize}
+
+\vspace{0.15cm}
+
+\textbf{\textcolor{primary}{2. Sütun Harflerini ve Hücre Adreslerini Revize Edin:}}
+Rapor sayfalarındaki sütun yerleri değiştiğinde \texttt{mod\_Config} içerisindeki ilgili harfleri güncelleyin:
+\begin{lstlisting}[caption={Sütun Sabitlerinin Güncellenmesi}]
+' Eski: Public Const ALL_CASES_STATUS_COL As String = "AF"
+' Yeni Sütun Konumu:
+Public Const ALL_CASES_STATUS_COL As String = "AG"
+Public Const ALL_CASES_CLOSE_DATE_COL As String = "X"
+\end{lstlisting}
+
+\vspace{0.15cm}
+
+\textbf{\textcolor{primary}{3. Durum Metinlerini ve Kelime Filtrelerini Genişletin:}}
+Sisteme yeni bir vaka durumu eklendiyse veya durum kelimeleri değiştiyse (Örn: "Çözüldü" yerine "Tamamlandı" veya "İşlemde" yerine "Devam Ediyor" geldiyse); sabit listelerine yeni kelimeyi virgülle ekleyin:
+\begin{lstlisting}[caption={Geçerli Durum Sabitlerinin Güncellenmesi}]
+Public Const VALID_CLOSED_STATUSES As String = "Çözüldü,Kapandı,Kapalı,Cozuldu,KAPANDI,KAPALI,Tamamlandı,TAMAMLANDI"
+Public Const VALID_OPEN_STATUSES   As String = "Açık,Atandı,Beklemede,İşlemde,Acik,Atandi,Islemde,Devam Ediyor"
+\end{lstlisting}
+
+\vspace{0.15cm}
+
+\textbf{\textcolor{primary}{4. İş Mantığı Katmanını Koruyun:}}
+Sütun veya durum ismi değişikliklerinde \texttt{mod\_Services} içerisindeki algoritmik kodlara dokunmanıza kesinlikle gerek yoktur; arka plan servisleri dinamik olarak yenilenen bu sabitleri okuyarak kesişim hücrelerini hesaplayacaktır.
+
+\newpage
+
+% ==========================================
+% SENARYO 2: ARAYÜZE YENİ PANEL EKLEME
+% ==========================================
+\section{Senaryo 2: Arayüze Yeni Bir Panel Ekleme (\texttt{CreateYEPYENIPanel})}
+
+Login paneline veya genel iş akışına yepyeni bir işlem ekranı (Panel) dahil edilmek istendiğinde projenin Katmanlı Mimarisi sırasıyla takip edilerek adımlar yürütülür:
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{1. Adım: Sabit ve Görsel Metin Tanımlamaları (\texttt{mod\_Config})}}
+\texttt{mod\_Config} modülünde yeni eklenen panelin başlığı ve buton yazıları için sabitler tanımlanır:
+\begin{lstlisting}[caption={Yeni Panel Sabitlerinin Tanımlanması}]
+Public Const LBL_YEPYENI_PANEL_TITLE As String = "YEPYENİ ÖZEL ANALİZ PANELİ"
+Public Const BTN_CAPTION_TO_YEPYENI  As String = "YEPYENİ ANALİZ"
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{2. Adım: Panel Yapıcısı ve Çizim Prosedürü (\texttt{mod\_UI\_View})}}
+\texttt{mod\_UI\_View} modülü içerisine yeni OLE Frame bileşenini ve içerisindeki kontrol elemanlarını (Label, Button, ListBox) çizen \texttt{CreateYEPYENIPanel} prosedürü yazılır:
+\begin{lstlisting}[caption={CreateYEPYENIPanel Çizim Prosedürü}]
+Public Sub CreateYEPYENIPanel(ws As Worksheet)
+    Dim oleFrame As OLEObject, realFrame As MSForms.Frame
+    Set oleFrame = ws.OLEObjects.Add(ClassType:="Forms.Frame.1", Left:=PANEL_LEFT, Top:=PANEL_TOP, Width:=PANEL_WIDTH, Height:=PANEL_HEIGHT)
+    oleFrame.Name = "pan_YEPYENIPanel"
+    Set realFrame = oleFrame.Object
+    realFrame.Caption = ""
+    realFrame.BackColor = COLOR_GRAY_BG
+    
+    AddControlLabel realFrame, "lbl_YepyeniTitle", LBL_YEPYENI_PANEL_TITLE, 40, 20
+    AddControlListBox realFrame, "lst_YepyeniStatus", 4, "150;100;120;150"
+    AddControlButton realFrame, "btn_BackToLogin", BTN_CAPTION_BACK, 40, 260, 120, 35, COLOR_RED
+    AddControlButton realFrame, "btn_UpdateYepyeni", BTN_CAPTION_UPDATE, 380, 260, 120, 35, COLOR_WHITE, &H333333
+    oleFrame.Visible = False
+End Sub
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{3. Adım: Sistem Kaydı ve Navigasyon Entegrasyonu (\texttt{mod\_UI\_Manager})}}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \texttt{BuildNavigationSystem} prosedürüne \texttt{mod\_UI\_View.CreateYEPYENIPanel ws} çağrısı eklenir.
+    \item \texttt{SwitchTo} prosedüründeki panel gizleme alanına \texttt{ws.OLEObjects("pan\_YEPYENIPanel").Visible = False} satırı ve \texttt{Select Case} bloğuna \texttt{"YEPYENIPanel"} seçeneği dahil edilir.
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{4. Adım: Olay Dinleyici ve Yönlendirme Katmanı (\texttt{clsDynamicButton} \& \texttt{mod\_UI\_Events})}}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \texttt{clsDynamicButton} sınıf modülündeki \texttt{Select Case parentFrame.Name} kontrolüne \texttt{Case "pan\_YEPYENIPanel": mod\_UI\_Events.HandleYEPYENIPanelEvents DynamicButton.Name, parentFrame} satırı eklenir.
+    \item \texttt{mod\_UI\_Events} modülüne tıklamaları yöneten \texttt{HandleYEPYENIPanelEvents} prosedürü yazılır.
+\end{itemize}
+
+\newpage
+
+% ==========================================
+% SENARYO 3: YENİ HESAPLAMA SERVİSİ EKLEME
+% ==========================================
+\section{Senaryo 3: Yeni Bir İş Mantığı veya Hesaplama Servisi Ekleme}
+
+Uygulamaya yeni bir hesaplama, metrik analizi veya özel rapor tarama özelliği eklenmesi gerektiğinde izlenecek mimari adımlar:
+
+\vspace{0.3cm}
+
+\textbf{\textcolor{primary}{1. Servis Fonksiyonunu \texttt{mod\_Services} İçinde Kurgulayın:}}
+Tüm veri işleme, filtreleme ve matris kesişim adresi bulma mantığını arayüz görsel kodlarından tamamen bağımsız olarak bu modülde bir \texttt{Function} olarak yazın:
+\begin{lstlisting}[caption={Yeni Hesaplama Servis Fonksiyonu Örneği}]
+Public Function GetYepyeniCalculatedData() As Collection
+    Dim results As New Collection, ws As Worksheet
+    ' ... Veri tarama ve Scripting.Dictionary ile gruplama adimlari ...
+    Set GetYepyeniCalculatedData = results
+End Function
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{2. Bellek İçi (In-Memory) Diziler Kullanın:}}
+Excel hücrelerini döngü ile tek tek gezmek işlem hızını düşürür. Bunun yerine verileri tek hamlede \texttt{Variant} dizisine veya \texttt{Scripting.Dictionary} nesnesine çekerek RAM üzerinde işleyin:
+\begin{lstlisting}[caption={RAM Üzerinde Hızlı Veri İşleme}]
+Dim dataArray As Variant
+dataArray = ws.Range("A2:Z1000").Value ' Tek seferde RAM'e alma
+' dataArray(i, j) uzerinden milisaniyeler icinde sorgulama
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{3. Sonucu Arayüz Katmanında Render Edin:}}
+Hesaplanan sonuçları bir \texttt{Collection} veya dizi olarak döndürün, ardından \texttt{mod\_UI\_View} içindeki \texttt{RenderYEPYENIPanel} prosedürü ile \texttt{ListBox} elemanına bağlayın:
+\begin{lstlisting}[caption={ListBox Veri Bağlama (Rendering)}]
+Public Sub RenderYEPYENIPanel(realFrame As MSForms.Frame)
+    Dim lst As MSForms.ListBox, data As Collection, item As Variant
+    Set lst = realFrame.Controls("lst_YepyeniStatus")
+    lst.Clear
+    Set data = mod_Services.GetYepyeniCalculatedData()
+    For Each item In data
+        lst.AddItem
+        lst.List(lst.ListCount - 1, 0) = item(0)
+    Next item
+End Sub
+\end{lstlisting}
+
+\vspace{0.3cm}
+
+\begin{infobox}{\faSitemap\ Servis Mimarisinin Avantajı}
+İş mantığı servis fonksiyonunda kurgulandığı için, gelecekte Excel arayüzü değişse bile \texttt{GetYepyeniCalculatedData} fonksiyonuna dokunulmadan farklı mecralarda tekrar kullanılabilir (Reusability).
+\end{infobox}
+
+\newpage
+
+% ==========================================
+% SENARYO 4: VERİTABANI/SAYFA EKLEME & MİMARİ KURALLAR
+% ==========================================
+\section{Senaryo 4: Yeni Veritabanı Çalışma Sayfası Ekleme ve Geliştirme Kuralları}
+
+Sisteme \texttt{ARIZA} ve \texttt{BAKIM} dışında örneğin \texttt{KALITE} veya \texttt{LOJISTIK} adında 3. bir veritabanı sayfası ekleneceği zaman izlenecek süreçler ve uyulması gereken katı geliştirme kuralları şunlardır:
+
+\vspace{0.3cm}
+
+\textbf{\textcolor{primary}{1. Veritabanı Eşleme Fonksiyonunu Güncelleyin:}}
+\texttt{mod\_Services} modülündeki \texttt{GetTargetDbSheetName} fonksiyonuna yeni sayfa koşulunu ekleyin:
+\begin{lstlisting}[caption={Hedef Veritabanı Eşleme Güncellemesi}]
+Public Function GetTargetDbSheetName(ByVal sheetName As String) As String
+    If InStr(1, sheetName, "KALITE", vbTextCompare) > 0 Then
+        GetTargetDbSheetName = "KALITE"
+    ElseIf InStr(1, sheetName, "BAKIM", vbTextCompare) > 0 Then
+        GetTargetDbSheetName = DATABASE_SHEET_NAME_BAKIM
+    Else
+        GetTargetDbSheetName = DATABASE_SHEET_NAME_ARIZA
+    End If
+End Function
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\textbf{\textcolor{primary}{2. Yeni Veritabanı Sayfa Yapısını Oluşturun:}}
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item Sayfanın 1. satırına takip edilecek tarihleri \texttt{dd.mm.yyyy} formatında yerleştirin.
+    \item B sütununa (\texttt{B} kolonu) personel/vaka isimlerini yazın.
+    \item \textbf{"AÇIK VAKA SAYISI"} ve \textbf{"KAPALI VAKA SAYISI"} arama başlıklarını ilgili satırlara ekleyin.
+\end{itemize}
+
+\vspace{0.3cm}
+
+\begin{warningbox}{\faExclamationTriangle\ Katı Kodlama Standartları ve Kalite Kuralları}
+Geliştiricilerin kod tabanına müdahale ederken uymakla yükümlü olduğu temel kurallar:
+\begin{itemize}\setlength{\itemsep}{2pt}
+    \item \textbf{Değişken Bildirimi:} Eklenen her yeni modülün ve sınıfın en başında mutlaka \texttt{Option Explicit} ifadesi yer almalıdır.
+    \item \textbf{Hücre Bazlı Döngü Yasağı:} Çalışma sayfası hücreleri üzerinde tek tek \texttt{For Each cell In Range} döngüsü kurulmamalı; veriler belleğe (\texttt{Variant Array} / \texttt{Scripting.Dictionary}) alınarak milisaniyeler seviyesinde işlenmelidir.
+    \item \textbf{Bellek Güvenliği:} Dinamik oluşturulan her bir \texttt{MSForms.CommandButton} nesnesi, bellek kayıplarını ve tıklama hatalarını önlemek için merkezi \texttt{ButtonCollection} koleksiyonuna eklenmelidir.
+\end{itemize}
+\end{warningbox}
+
+\vspace{0.3cm}
+
+\begin{tcolorbox}[colback=yellow!15,colframe=orange!80!black,leftrule=3.5pt,boxrule=0.4pt,top=5pt,bottom=5pt]
+    \textbf{\textcolor{orange!80!black}{\faInfoCircle\ Özet ve Katkı Yaklaşımı:}}\\
+    \small Bu proje, Modüler Katmanlı Mimari (Layered Architecture) ve MVC (Model-View-Controller) prensipleri doğrultusunda inşa edilmiştir. Yapılacak tüm geliştirmelerde iş mantığı (\texttt{mod\_Services}), görünüm (\texttt{mod\_UI\_View}) ve olay yönlendirme (\texttt{mod\_UI\_Events}) katmanlarının kesinlikle birbirinden ayrık tutulması projenin sürdürülebilirliği için şarttır.
+\end{tcolorbox}
