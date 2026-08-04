@@ -58,12 +58,18 @@ public class Auth {
     }
 
     @GetMapping("/")
-    public String indexPage() {
+    public String indexPage(HttpSession session) {
+        if (session.getAttribute("user") != null) {
+            return "redirect:/verified.html";
+        }
         return "redirect:/index.html"; 
     }
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(HttpSession session) {
+        if (session.getAttribute("user") != null) {
+            return "redirect:/verified.html";
+        }
         return "redirect:/index.html";
     }
 
@@ -77,6 +83,12 @@ public class Auth {
             return "redirect:/verified.html";
         }
         return "redirect:/index.html?error=INVALID_CREDENTIALS"; 
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/index.html";
     }
 
     @GetMapping("/api/user-info")

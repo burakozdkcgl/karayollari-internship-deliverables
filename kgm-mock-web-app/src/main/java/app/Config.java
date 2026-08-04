@@ -1,13 +1,15 @@
 package app;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class Config {
 
-    private String dbUrl;
-    private String dbUser;
-    private String dbPassword;
+    private String dbUrl = "";
+    private String dbUser = "";
+    private String dbPassword = "";
     private boolean resetSchemas;
     private boolean ifResetFillMockData;
 
@@ -16,42 +18,26 @@ public class Config {
     }
 
     private void loadConfig() {
+        ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("config.json")) {
-
-            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            if (is == null) return;
             
-            this.dbUrl = extractJsonValue(content, "db_url");
-            this.dbUser = extractJsonValue(content, "db_user");
-            this.dbPassword = extractJsonValue(content, "db_password");
-            this.resetSchemas = extractJsonBoolean(content, "RESET_SCHEMAS_ON_EACH_LAUNCH");
-            this.ifResetFillMockData = extractJsonBoolean(content, "IF_RESET_FILL_MOCK_DATA");
+            JsonNode root = mapper.readTree(is);
+            
+            if (root.has("db_url")) this.dbUrl = root.get("db_url").asText("");
+            if (root.has("db_user")) this.dbUser = root.get("db_user").asText("");
+            if (root.has("db_password")) this.dbPassword = root.get("db_password").asText("");
+            if (root.has("RESET_SCHEMAS_ON_EACH_LAUNCH")) {
+                this.resetSchemas = root.get("RESET_SCHEMAS_ON_EACH_LAUNCH").asBoolean(false);
+            }
+            if (root.has("IF_RESET_FILL_MOCK_DATA")) {
+                this.ifResetFillMockData = root.get("IF_RESET_FILL_MOCK_DATA").asBoolean(false);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
-    }
-
-    private String extractJsonValue(String json, String key) {
-        String searchKey = "\"" + key + "\"";
-        int keyIndex = json.indexOf(searchKey);
-        if (keyIndex == -1) return "";
-        
-        int startIndex = json.indexOf("\"", keyIndex + searchKey.length() + 1) + 1;
-        int endIndex = json.indexOf("\"", startIndex);
-        return json.substring(startIndex, endIndex);
-    }
-
-    private boolean extractJsonBoolean(String json, String key) {
-        String searchKey = "\"" + key + "\"";
-        int keyIndex = json.indexOf(searchKey);
-        if (keyIndex == -1) return false;
-
-        int colonIndex = json.indexOf(":", keyIndex);
-        if (colonIndex == -1) return false;
-
-        String sub = json.substring(colonIndex + 1).trim();
-        return sub.startsWith("true");
     }
 
     public String getDbUrl() { return dbUrl; }
