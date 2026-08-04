@@ -9,6 +9,31 @@
         .hidden {
             display: none !important;
         }
+
+        /* Fixed container height prevents form layout shift */
+        .error-container {
+            min-height: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* White error text with shake animation */
+        .error-message {
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Subtle horizontal shake keyframes */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
     </style>
 </head>
 <body>
@@ -27,6 +52,12 @@
 
                 <!-- Login Form (Hidden by default) -->
                 <form action="/login" method="post" id="loginForm" class="hidden" style="max-width: 320px; margin-bottom: 25px;">
+                    
+                    <!-- Error message container above inputs -->
+                    <div class="error-container">
+                        <div id="errorLabel" class="error-message hidden">Invalid credentials!</div>
+                    </div>
+
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: #a0a0a5;">Username</label>
                         <input type="text" name="username" required autocomplete="off" style="width: 100%; padding: 12px; background: #0f0a07; border: 1px solid rgba(226, 226, 229, 0.2); color: #fff; outline: none;">
@@ -64,6 +95,22 @@
         const loginForm = document.getElementById('loginForm');
         const actionBtn = document.getElementById('actionBtn');
         const secondaryBtn = document.getElementById('secondaryBtn');
+        const errorLabel = document.getElementById('errorLabel');
+
+        // Check URL parameters for login error on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error') === 'INVALID_CREDENTIALS') {
+                // Keep form visible
+                isFormState = true;
+                mainTitle.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                secondaryBtn.textContent = 'Back';
+                
+                // Show error message
+                errorLabel.classList.remove('hidden');
+            }
+        });
 
         function handleAction() {
             if (!isFormState) {
@@ -80,10 +127,11 @@
 
         function handleSecondaryAction() {
             if (isFormState) {
-                // Return to title state when clicking Back
+                // Return to title state and hide error
                 isFormState = false;
                 mainTitle.classList.remove('hidden');
                 loginForm.classList.add('hidden');
+                errorLabel.classList.add('hidden');
                 secondaryBtn.textContent = 'Register';
             } else {
                 // Handle registration redirection if needed
