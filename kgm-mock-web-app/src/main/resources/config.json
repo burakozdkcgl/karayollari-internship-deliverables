@@ -1,5 +1,7 @@
 {
   "db_url": "jdbc:mysql://localhost:3306/kgm",
   "db_user": "root",
-  "db_password": "password"
+  "db_password": "password",
+  "RESET_SCHEMAS_ON_EACH_LAUNCH": true,
+  "IF_RESET_FILL_MOCK_DATA": true
 }
