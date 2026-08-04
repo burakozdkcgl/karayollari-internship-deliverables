@@ -2,15 +2,20 @@ package app;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Service;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-@Service
+@Controller
 public class Auth {
 
     @PersistenceContext
@@ -30,7 +35,7 @@ public class Auth {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Şifreleme algoritması bulunamadı!", e);
+            throw new RuntimeException("ERROR_HASHING_PASSWORD", e);
         }
     }
 
@@ -50,5 +55,37 @@ public class Auth {
                 .getResultList();
 
         return users.isEmpty() ? null : users.get(0);
+    }
+
+    @GetMapping("/")
+    public String indexPage() {
+        return "redirect:/index.html"; 
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "redirect:/index.html";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username, 
+                        @RequestParam String password, 
+                        HttpSession session) {
+        User user = authenticate(username, password);
+        if (user != null) {
+            session.setAttribute("user", user);
+            return "redirect:/verified.html";
+        }
+        return "redirect:/index.html?error=INVALID_CREDENTIALS"; 
+    }
+
+    @GetMapping("/api/user-info")
+    @ResponseBody
+    public String getUserInfo(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "";
+        }
+        return user.getUserFullname();
     }
 }

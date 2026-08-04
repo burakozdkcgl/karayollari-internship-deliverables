@@ -14,9 +14,15 @@ public class Application {
         Config config = new Config();
 
         Properties props = System.getProperties();
-        props.put("spring.datasource.url", config.getDbUrl());
-        props.put("spring.datasource.username", config.getDbUser());
-        props.put("spring.datasource.password", config.getDbPassword());
+        if (!config.getDbUrl().isEmpty()) {
+            props.put("spring.datasource.url", config.getDbUrl());
+        }
+        if (!config.getDbUser().isEmpty()) {
+            props.put("spring.datasource.username", config.getDbUser());
+        }
+        if (!config.getDbPassword().isEmpty()) {
+            props.put("spring.datasource.password", config.getDbPassword());
+        }
 
         if (config.isResetSchemas()) {
             props.put("spring.jpa.hibernate.ddl-auto", "create");
