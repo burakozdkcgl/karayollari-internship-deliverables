@@ -34,8 +34,10 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner initDatabase(MockData mockData) {
+    public CommandLineRunner initDatabase(Database database, MockData mockData) {
         return args -> {
+            database.initMasterData();
+
             Config config = new Config();
             if (config.isResetSchemas() && config.isIfResetFillMockData()) {
                 mockData.insertMockData();

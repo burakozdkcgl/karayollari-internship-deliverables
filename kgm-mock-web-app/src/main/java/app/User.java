@@ -3,13 +3,32 @@ package app;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "user_roles")
+class UserRole {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "role_id")
+    private Long id;
+
+    @Column(name = "role_name", nullable = false, unique = true, length = 30)
+    private String name;
+
+    public UserRole() {}
+
+    public UserRole(String name) {
+        this.name = name;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+
+@Entity
 @Table(name = "users")
 public class User {
-    
-    public enum Role {
-        ADMIN,
-        PERSONNEL
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,17 +44,17 @@ public class User {
     @Column(name = "user_password", nullable = false)
     private String userPassword;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_role", nullable = false)
-    private Role userRole;
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private UserRole role;
 
     public User() {}
 
-    public User(String userUsername, String userFullname, String userPassword, Role userRole) {
+    public User(String userUsername, String userFullname, String userPassword, UserRole role) {
         this.userUsername = userUsername;
         this.userFullname = userFullname;
         this.userPassword = userPassword;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     public Long getUserId() { return userId; }
@@ -50,6 +69,6 @@ public class User {
     public String getUserPassword() { return userPassword; }
     public void setUserPassword(String userPassword) { this.userPassword = userPassword; }
 
-    public Role getUserRole() { return userRole; }
-    public void setUserRole(Role userRole) { this.userRole = userRole; }
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 }

@@ -4,229 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KGM Portal</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100vh;
-            max-width: 100vw;
-            max-height: 100vh;
-            overflow: hidden !important;
-        }
-
-        body {
-            background-color: #0f0a07;
-            color: #2b2b2b;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at 75% 50%, #291203 0%, #170b04 50%, #0f0a07 100%);
-            position: relative;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .highway-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: 
-                linear-gradient(90deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px),
-                linear-gradient(0deg, rgba(255, 255, 255, 0.006) 1px, transparent 1px);
-            background-size: 60px 60px;
-            transform: perspective(500px) rotateX(60deg) translateY(-30%) translateZ(-100px);
-            opacity: 0.25;
-            z-index: 0;
-            pointer-events: none;
-            animation: roadMove 25s linear infinite;
-        }
-
-        @keyframes roadMove {
-            from { background-position: 0 0; }
-            to { background-position: 0 600px; }
-        }
-
-        /* Ana Konteyner - Büyütüldü (En ve Boy) */
-        .dashboard-container {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            gap: 20px;
-            width: 95%;
-            max-width: 1380px; /* Enine genişletildi */
-            height: 580px;      /* Boyuna büyütüldü */
-        }
-
-        /* Sol Taraf - Kullanıcı Paneli */
-        .user-sidebar {
-            width: 230px;
-            height: 100%;
-            background: #fbf9f5;
-            border: 1px solid #e2ddd3;
-            border-radius: 0;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
-            padding: 30px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .welcome-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #8c8275;
-        }
-
-        .welcome-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1a1816;
-            word-break: break-word;
-        }
-
-        .btn-logout {
-            width: 100%;
-            padding: 12px;
-            background: #1a1816;
-            border: 1px solid #1a1816;
-            color: #fbf9f5;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 0;
-            transition: all 0.25s ease;
-        }
-
-        .btn-logout:hover {
-            background: #a3382b;
-            border-color: #a3382b;
-            color: #ffffff;
-        }
-
-        /* Sağ Taraf - Dashboard Paneli */
-        .dashboard-card {
-            flex: 1;
-            height: 100%;
-            border: 1px solid #e2ddd3;
-            background: #fbf9f5;
-            border-radius: 0;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* Sol İçerik Alanı */
-        .content-area {
-            flex: 1;
-            padding: 40px 45px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tab-content {
-            display: none;
-            height: 100%;
-            animation: fadeIn 0.25s ease-in-out;
-        }
-
-        .tab-content.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tab-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #1a1816;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #eae3d5;
-            padding-bottom: 12px;
-        }
-
-        .tab-description {
-            font-size: 0.95rem;
-            color: #635c52;
-            line-height: 1.6;
-        }
-
-        /* Sağ Navigasyon Menüsü */
-        .nav-sidebar {
-            width: 250px;
-            border-left: 1px solid #eae3d5;
-            background: #f2ede4;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .nav-item {
-            padding: 20px 24px;
-            color: #736b60;
-            text-decoration: none;
-            font-size: 0.82rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #eae3d5;
-            border-right: 4px solid transparent;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-item:hover {
-            color: #1a1816;
-            background: #e8e1d5;
-        }
-
-        .nav-item.active {
-            color: #1a1816;
-            background: #fbf9f5;
-            border-right: 4px solid #1a1816;
-            font-weight: 700;
-        }
-
-        .admin-badge {
-            font-size: 0.65rem;
-            padding: 3px 7px;
-            background: #1a1816;
-            color: #fbf9f5;
-            border-radius: 0;
-            letter-spacing: 0.5px;
-        }
-
-        .admin-only {
-            display: none;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(3px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/verified.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/fleet.js"></script>
 </head>
 <body>
 
@@ -234,7 +14,6 @@
 
     <div class="dashboard-container">
         
-        <!-- Sol Kullanıcı Paneli -->
         <aside class="user-sidebar">
             <div class="user-info">
                 <span class="welcome-label">Welcome</span>
@@ -243,42 +22,55 @@
             <a href="/logout" class="btn-logout">Logout</a>
         </aside>
 
-        <!-- Ana Dashboard Paneli -->
         <div class="dashboard-card">
             
             <main class="content-area">
                 
-                <!-- MAIN Tab -->
                 <div id="main" class="tab-content active">
                     <h2 class="tab-title">Overview</h2>
                     <p class="tab-description">General overview and system control panel.</p>
                 </div>
 
-                <!-- USERS Tab -->
                 <div id="users" class="tab-content">
                     <h2 class="tab-title">Users</h2>
                     <p class="tab-description">Access active user directory, personnel contacts, and departmental roles.</p>
                 </div>
 
-                <!-- ROAD & TRAFFIC Tab -->
                 <div id="road-status" class="tab-content">
                     <h2 class="tab-title">Road & Traffic</h2>
                     <p class="tab-description">Monitor real-time road conditions, active maintenance works, and closures.</p>
                 </div>
 
-                <!-- FLEET MANAGEMENT Tab -->
                 <div id="fleet" class="tab-content">
                     <h2 class="tab-title">Fleet Management</h2>
                     <p class="tab-description">Track heavy machinery, maintenance vehicles, and operational status in real time.</p>
+                    
+                    <div class="fleet-view-container">
+                        <div class="fleet-table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Plate</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Region</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fleetTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="fleet-chart-wrapper">
+                            <canvas id="fleetChart"></canvas>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- INCIDENTS & REQUESTS Tab -->
                 <div id="incidents" class="tab-content">
                     <h2 class="tab-title">Incidents & Requests</h2>
                     <p class="tab-description">Review field notifications, emergency reports, and maintenance request tickets.</p>
                 </div>
 
-                <!-- SYSTEM LOGS Tab (Admin Only) -->
                 <div id="system-logs" class="tab-content">
                     <h2 class="tab-title">System Logs</h2>
                     <p class="tab-description">Inspect administrative action logs, security audits, and system access history.</p>
@@ -286,7 +78,6 @@
 
             </main>
 
-            <!-- Sağ Navigasyon Barı -->
             <nav class="nav-sidebar">
                 <div class="nav-item active" onclick="switchTab('main', this)">
                     <span>Main</span>
@@ -315,15 +106,15 @@
 
     <script>
         function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
 
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
+
+            if (tabId === 'fleet') {
+                initFleetPanel();
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -332,11 +123,8 @@
                 .then(data => {
                     if (data && data.name) {
                         document.getElementById('userName').textContent = data.name;
-                        
                         if (data.role === 'admin') {
-                            document.querySelectorAll('.admin-only').forEach(el => {
-                                el.style.display = 'flex';
-                            });
+                            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
                         }
                     } else {
                         window.location.href = '/index.html';
