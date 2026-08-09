@@ -1,6 +1,6 @@
 # Excel VBA Case Tracker App
 
-This repository contains the VBA source code components for the Excel application as well as the LaTeX source code for the documentation report.
+This folder contains the VBA source code components for the Excel application as well as the LaTeX source code for the documentation report.
 
 ## Directory Structure
 
@@ -21,7 +21,7 @@ This repository contains the VBA source code components for the Excel applicatio
 
 After completing the manual setup, your VBA project structure should look like this:
 
-![Project Structure](project_files.jpg)
+![Project Structure](report-source-code/project_files.jpg)
 
 ### Option 2: Using the XVBA Extension
 If you are using the **XVBA - Live Server VBA** extension, use the files located inside the `app-source-code/vba-files` directory.

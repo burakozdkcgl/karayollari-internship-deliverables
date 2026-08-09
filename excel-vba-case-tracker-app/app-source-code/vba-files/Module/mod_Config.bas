@@ -39,12 +39,12 @@ Public Const DATABASE_SHEET_NAME_ARIZA As String = "ARIZA"
 Public Const DATABASE_SHEET_NAME_BAKIM As String = "BAKIM"
 
 ' Incident Case Sheets
-Public Const OPEN_CASES_SHEET_NAME     As String = "1 Gün Önce Açılan Vakalar"
-Public Const CLOSED_CASES_SHEET_NAME   As String = "1 Gün Önce Kapanan Vakalar"
+Public Const OPEN_CASES_SHEET_NAME     As String = "1 Gün Önce Açılan V"
+Public Const CLOSED_CASES_SHEET_NAME   As String = "1 Gün Önce Kapanan V"
 
 ' Maintenance Sheets
-Public Const OPEN_MAINT_SHEET_NAME     As String = "1 Gün Önce Açılan P. Bakımlar"
-Public Const CLOSED_MAINT_SHEET_NAME   As String = "1 Gün Önce Kapanan P. Bakımlar"
+Public Const OPEN_MAINT_SHEET_NAME     As String = "1 Gün Önce Açılan P"
+Public Const CLOSED_MAINT_SHEET_NAME   As String = "1 Gün Önce Kapanan P"
 
 ' Previous Month Control Sheets
 Public Const SHEET_NAME_ALL_CASES      As String = "Tüm Vakalar"
