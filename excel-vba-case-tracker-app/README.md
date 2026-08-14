@@ -1,6 +1,22 @@
 # Excel VBA Case Tracker App
 
+check out the detailed report.
+
 This folder contains the VBA source code components for the Excel application as well as the LaTeX source code for the documentation report.
+
+---
+
+> **Note on Confidentiality:**  
+> This repository is maintained strictly for **version control and code tracking**. The actual Excel workbook contains sensitive company data and is kept private, meaning the code cannot be executed as a standalone application.
+
+---
+
+## Screenshots
+
+![Screenshot 1](report-source-code/screenshot1.jpg)
+![Screenshot 2](report-source-code/screenshot2.jpg)
+![Screenshot 3](report-source-code/screenshot3.jpg)
+![Screenshot 4](report-source-code/screenshot4.jpg)
 
 ## Directory Structure
 
