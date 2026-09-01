@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/fleet.js"></script>
     <script src="/js/traffic.js"></script>
+    <script src="/js/users.js"></script>
 </head>
 <body>
 
@@ -36,10 +37,16 @@
                     <p class="tab-description">General overview and system control panel.</p>
                 </div>
 
-                <div id="users" class="tab-content">
-                    <h2 class="tab-title">Users</h2>
-                    <p class="tab-description">Access active user directory, personnel contacts, and departmental roles.</p>
+        <div id="users" class="tab-content">
+            <h2 class="tab-title">Users Directory</h2>
+            <p class="tab-description">Directory of registered personnel, roles, and departmental contacts.</p>
+
+            <div class="users-scroll-container">
+                <div class="users-grid" id="usersList">
+                
                 </div>
+            </div>
+        </div>
 
                 <div id="road-status" class="tab-content">
     <h2 class="tab-title">Road & Distance</h2>
@@ -162,6 +169,8 @@
                 initFleetPanel();
             } else if (tabId === 'road-status') {
                 initRoadMap();
+            } else if (tabId === 'users') {
+                initUsersPanel();
             }
         }
 
