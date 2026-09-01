@@ -279,3 +279,98 @@ body {
     from { opacity: 0; transform: translateY(3px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+
+/* ROAD & TRAFFIC STYLES */
+.traffic-container {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+
+.traffic-controls {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #eae3d5;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 380px;
+    box-sizing: border-box;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.control-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #8c8275;
+    letter-spacing: 0.5px;
+}
+
+.btn-calculate {
+    background: #1a1816;
+    border: 1px solid #1a1816;
+    color: #fbf9f5;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    margin-top: 4px;
+}
+
+.btn-calculate:hover {
+    background: #a3382b;
+    border-color: #a3382b;
+    color: #ffffff;
+}
+
+.route-result-card {
+    margin-top: 5px;
+    background: #fbf9f5;
+    border: 1px solid #eae3d5;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+}
+
+.result-label {
+    color: #736b60;
+}
+
+.result-val {
+    font-weight: 700;
+    color: #1a1816;
+}
+
+.traffic-map-wrapper {
+    flex: 1.6;
+    background: #ffffff;
+    border: 1px solid #eae3d5;
+    height: 380px;
+    position: relative;
+    z-index: 1;
+}
+
+#kgmMap {
+    width: 100%;
+    height: 100%;
+}
