@@ -21,13 +21,18 @@
 
     <div class="dashboard-container">
         
-        <aside class="user-sidebar">
-            <div class="user-info">
-                <span class="welcome-label">Welcome</span>
-                <span class="welcome-name" id="userName">User</span>
-            </div>
-            <a href="/logout" class="btn-logout">Logout</a>
-        </aside>
+<aside class="user-sidebar">
+    <div class="user-info">
+        <span class="welcome-label">Welcome</span>
+        <span class="welcome-name" id="userName">User</span>
+
+        <div class="current-user-avatar-wrap">
+            <img id="userAvatarImg" src="" alt="Profile Image" class="current-user-avatar" style="display: none;">
+            <div id="userAvatarPlaceholder" class="current-user-avatar-placeholder">U</div>
+        </div>
+    </div>
+    <a href="/logout" class="btn-logout">Logout</a>
+</aside>
 
         <div class="dashboard-card">
             
@@ -228,31 +233,43 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('/api/user-info')
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.name) {
-                        document.getElementById('userName').textContent = data.name;
-                        if (data.role === 'admin') {
-                            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
-                        }
-                    } else {
-                        window.location.href = '/index.html';
-                    }
-                })
-                .catch(() => {
-                    fetch('/api/user-info')
-                        .then(res => res.text())
-                        .then(name => {
-                            if (name && name.trim() !== '') {
-                                document.getElementById('userName').textContent = name;
-                            } else {
-                                window.location.href = '/index.html';
-                            }
-                        });
-                });
+window.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/user-info')
+        .then(response => {
+            if (!response.ok) throw new Error("Unauthorized");
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.name) {
+                document.getElementById('userName').textContent = data.name;
+                document.getElementById('userAvatarPlaceholder').textContent = data.name.charAt(0).toUpperCase();
+
+                // Profil resmini yükle
+                const imgElem = document.getElementById('userAvatarImg');
+                const placeholderElem = document.getElementById('userAvatarPlaceholder');
+                
+                imgElem.src = `/api/users/${data.id}/avatar`;
+                imgElem.onload = () => {
+                    imgElem.style.display = 'block';
+                    placeholderElem.style.display = 'none';
+                };
+                imgElem.onerror = () => {
+                    imgElem.style.display = 'none';
+                    placeholderElem.style.display = 'flex';
+                };
+
+                // Admin kontrolü
+                if (data.role === 'admin') {
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
+                }
+            } else {
+                window.location.href = '/index';
+            }
+        })
+        .catch(() => {
+            window.location.href = '/index';
         });
+});
     </script>
 </body>
 </html>
