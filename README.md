@@ -27,7 +27,7 @@ tracking my summer internship deliverables at turkiye general directorate of hig
 | ![Fleet](./kgm-mock-web-app/screenshots/screenshot4.jpg) | ![Users](./kgm-mock-web-app/screenshots/screenshot5.jpg) |
 | *vehicle status tracking and chart breakdown* | *registered personnel list* |
 
-### Quick Start
+### How to run
 
 1. update db credentials in `kgm-mock-web-app/src/main/resources/config.json`
 
@@ -50,3 +50,23 @@ mvn spring-boot:run
 
 3. visit `http://localhost:8080`
    * default credentials are `admin` for both username and password
+
+## Excel VBA Apps
+
+> note: the original `.xlsm` workbooks are not included in this repository due to confidentiality policies. you cannot directly run these scripts without the internal sheet structure; they are kept here purely for version control and backup purposes.
+
+### 1. Case Tracker App (`excel-vba-case-tracker-app/`)
+
+automated case tracking and management system. the folder also includes a comprehensive technical report written in LaTeX covering system architecture, user workflows, and maintenance guidelines for future developers.
+
+| | | |
+| :---: | :---: | :---: |
+| <img src="./excel-vba-case-tracker-app/report-source-code/screenshot2.jpg" style="max-height: 180px; width: auto;" /> | <img src="./excel-vba-case-tracker-app/report-source-code/screenshot3.jpg" style="max-height: 180px; width: auto;" /> | <img src="./excel-vba-case-tracker-app/report-source-code/screenshot4.jpg" style="max-height: 180px; width: auto;" /> |
+
+### 2. Employee Management Dashboard (`excel-vba-employee-management/`)
+
+an interactive vba tool to query employee seniority, employment dates, and annual leave entitlement schedules by ID.
+
+| | | |
+| :---: | :---: | :---: |
+| <img src="./excel-vba-employee-management/screenshot1.jpg" style="max-height: 180px; width: auto;" /> | <img src="./excel-vba-employee-management/screenshot2.jpg" style="max-height: 180px; width: auto;" /> | <img src="./excel-vba-employee-management/screenshot3.jpg" style="max-height: 180px; width: auto;" /> |
