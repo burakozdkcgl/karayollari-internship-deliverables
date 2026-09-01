@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class Auth {
@@ -95,9 +97,16 @@ public class Auth {
 
     @GetMapping("/api/user-info")
     @ResponseBody
-    public String getUserInfo(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpSession session) {
         User user = (User) session.getAttribute("user");
-        return user == null ? "" : user.getUserFullname();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", user.getUserId());
+        data.put("name", user.getUserFullname());
+        data.put("role", user.getRole() != null ? user.getRole().getName().toLowerCase() : "personnel");
+        return ResponseEntity.ok(data);
     }
 
     @GetMapping("/api/users")

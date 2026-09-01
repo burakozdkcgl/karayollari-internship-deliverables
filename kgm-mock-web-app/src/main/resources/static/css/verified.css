@@ -693,3 +693,57 @@ body {
     color: #736b60;
     line-height: 1.4;
 }
+
+/* KALICI KIRMIZI LOGOUT BUTONU */
+.btn-logout {
+    width: 100%;
+    padding: 12px;
+    background: #a3382b; /* Doğrudan kırmızı */
+    border: 1px solid #a3382b;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.25s ease;
+}
+
+.btn-logout:hover {
+    background: #872b20; /* Üzerine gelince biraz daha koyu kırmızı */
+    border-color: #872b20;
+    color: #ffffff;
+}
+
+/* KARE PROFİL RESMİ ALANI */
+.current-user-avatar-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Tam kare kalmasını sağlar */
+    background: #1a1816;
+    border: 1px solid #eae3d5;
+    margin-top: 15px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.current-user-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.current-user-avatar-placeholder {
+    color: #fbf9f5;
+    font-size: 2.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
