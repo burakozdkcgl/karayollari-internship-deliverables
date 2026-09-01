@@ -13,6 +13,7 @@
     <script src="/js/fleet.js"></script>
     <script src="/js/traffic.js"></script>
     <script src="/js/users.js"></script>
+    <script src="/js/main.js"></script>
 </head>
 <body>
 
@@ -32,10 +33,68 @@
             
             <main class="content-area">
                 
-                <div id="main" class="tab-content active">
-                    <h2 class="tab-title">Overview</h2>
-                    <p class="tab-description">General overview and system control panel.</p>
+                <!-- MAIN OVERVIEW SECTION -->
+<div id="main" class="tab-content active">
+    <h2 class="tab-title">Main</h2>
+    <p class="tab-description">Real-time shift schedules, system diagnostics, and workforce telemetry.</p>
+
+    <div class="overview-container">
+        <!-- Sol: Büyük Operasyon Saati & Vardiya Takibi -->
+        <div class="shift-card">
+            <div class="clock-display" id="liveClock">00:00:00</div>
+            <div class="date-display" id="liveDate">Loading date...</div>
+            
+            <div class="shift-status-box">
+                <div class="shift-badge-row">
+                    <span class="shift-tag">CURRENT SHIFT</span>
+                    <span class="shift-name" id="currentShiftName">Shift 1 (Night)</span>
                 </div>
+                
+                <div class="shift-progress-wrap">
+                    <div class="shift-progress-bar" id="shiftProgressBar"></div>
+                </div>
+
+                <div class="shift-time-left" id="shiftRemainingTime">Remaining: --h --m</div>
+            </div>
+
+            <!-- 3 Vardiya Şeması -->
+            <div class="shift-timeline">
+                <div class="timeline-slot" id="slot-1">
+                    <span class="slot-title">Night Shift</span>
+                    <span class="slot-hours">00:00 - 08:00</span>
+                </div>
+                <div class="timeline-slot" id="slot-2">
+                    <span class="slot-title">Day Shift</span>
+                    <span class="slot-hours">08:00 - 16:00</span>
+                </div>
+                <div class="timeline-slot" id="slot-3">
+                    <span class="slot-title">Evening Shift</span>
+                    <span class="slot-hours">16:00 - 00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ: Sistem Durumu & Kullanıcı Sayacı -->
+        <div class="overview-side-panel">
+            <!-- Sistem Durumu Rozeti -->
+            <div class="kpi-card">
+                <span class="kpi-label">System Health</span>
+                <div class="status-indicator-wrap">
+                    <span class="pulse-dot"></span>
+                    <span class="status-title">All Lines Operational</span>
+                </div>
+                <span class="kpi-subtext">Telemetry and highway nodes working normally.</span>
+            </div>
+
+            <!-- Kayıtlı Personel Sayacı -->
+            <div class="kpi-card">
+                <span class="kpi-label">Active Directory</span>
+                <div class="kpi-counter" id="totalUsersCount">--</div>
+                <span class="kpi-subtext">Registered operators and personnel accounts.</span>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div id="users" class="tab-content">
             <h2 class="tab-title">Users Directory</h2>
@@ -144,13 +203,6 @@
                 <div class="nav-item" onclick="switchTab('fleet', this)">
                     <span>Fleet Management</span>
                 </div>
-                <div class="nav-item" onclick="switchTab('incidents', this)">
-                    <span>Incidents & Requests</span>
-                </div>
-                <div class="nav-item admin-only" onclick="switchTab('system-logs', this)">
-                    <span>Admin Panel</span>
-                    <span class="admin-badge">LOGS</span>
-                </div>
             </nav>
 
         </div>
@@ -165,7 +217,9 @@
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
 
-            if (tabId === 'fleet') {
+            if (tabId === 'main') {
+                loadDashboardStats();
+            } else if (tabId === 'fleet') {
                 initFleetPanel();
             } else if (tabId === 'road-status') {
                 initRoadMap();
