@@ -41,6 +41,13 @@ public class User {
     @Column(name = "user_fullname", nullable = false, length = 100)
     private String userFullname;
 
+    @Column(name = "user_email", length = 100)
+    private String userEmail;
+
+    @Lob
+    @Column(name = "profile_image", columnDefinition = "LONGBLOB")
+    private byte[] profileImage;
+
     @Column(name = "user_password", nullable = false)
     private String userPassword;
 
@@ -50,9 +57,11 @@ public class User {
 
     public User() {}
 
-    public User(String userUsername, String userFullname, String userPassword, UserRole role) {
+    public User(String userUsername, String userFullname, String userEmail, byte[] profileImage, String userPassword, UserRole role) {
         this.userUsername = userUsername;
         this.userFullname = userFullname;
+        this.userEmail = userEmail;
+        this.profileImage = profileImage;
         this.userPassword = userPassword;
         this.role = role;
     }
@@ -65,6 +74,12 @@ public class User {
 
     public String getUserFullname() { return userFullname; }
     public void setUserFullname(String userFullname) { this.userFullname = userFullname; }
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+
+    public byte[] getProfileImage() { return profileImage; }
+    public void setProfileImage(byte[] profileImage) { this.profileImage = profileImage; }
 
     public String getUserPassword() { return userPassword; }
     public void setUserPassword(String userPassword) { this.userPassword = userPassword; }
