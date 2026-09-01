@@ -374,3 +374,121 @@ body {
     width: 100%;
     height: 100%;
 }
+
+/* USERS DIRECTORY STYLES */
+.users-scroll-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 12px;
+}
+
+/* Şık ve minimal scrollbar tasarımı */
+.users-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.users-scroll-container::-webkit-scrollbar-track {
+    background: #eae3d5;
+}
+
+.users-scroll-container::-webkit-scrollbar-thumb {
+    background: #8c8275;
+}
+
+.users-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #1a1816;
+}
+
+.users-grid {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 380px; /* Uzun boy */
+    align-items: stretch;
+}
+
+.user-card {
+    width: 195px;
+    min-width: 195px; /* Kart genişliğini sabit ve dolgun tutar */
+    background: #ffffff;
+    border: 1px solid #eae3d5;
+    padding: 35px 16px 25px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.user-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: #d1cbbd;
+}
+
+.user-avatar-wrapper {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 24px;
+    background: #1a1816;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #eae3d5;
+    flex-shrink: 0;
+}
+
+.user-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-avatar-placeholder {
+    color: #fbf9f5;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.user-role-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-bottom: 16px;
+    background: #f2ede4;
+    color: #736b60;
+}
+
+.user-role-badge.admin {
+    background: #1a1816;
+    color: #fbf9f5;
+}
+
+.user-fullname {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1816;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.user-email {
+    font-size: 0.78rem;
+    color: #8c8275;
+    word-break: break-all;
+    line-height: 1.4;
+    padding: 0 4px;
+}
