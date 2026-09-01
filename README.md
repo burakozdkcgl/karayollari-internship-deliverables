@@ -51,6 +51,10 @@ mvn spring-boot:run
 3. visit `http://localhost:8080`
    * default credentials are `admin` for both username and password
 
+---
+<br>
+<br>
+
 ## Excel VBA Apps
 
 > note: the original `.xlsm` workbooks are not included in this repository due to confidentiality policies. you cannot directly run these scripts without the internal sheet structure; they are kept here purely for version control and backup purposes.
