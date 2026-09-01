@@ -38,7 +38,7 @@ public class MockData {
 
     @Transactional
     public void insertMockData() {
-        auth.registerUser("cazibe", "Cazibe Abbasova", "cazibe.abbasova@kgm.gov.tr", loadAvatar("cazibe.jpg"), "123", "ADMIN");
+        auth.registerUser("admin", "Cazibe Abbasova", "cazibe.abbasova@kgm.gov.tr", loadAvatar("cazibe.jpg"), "admin", "ADMIN");
         auth.registerUser("simge", "Simge Kunter", "simge.paris@kgm.gov.tr", loadAvatar("simge.jpg"), "123", "PERSONNEL");
         auth.registerUser("kemal", "Kemal Kükreyen", "kemal.kukreyen@kgm.gov.tr", loadAvatar("kemal.jpg"), "123", "PERSONNEL");
         auth.registerUser("baris", "Barış Martı", "baris.marti@kgm.gov.tr", loadAvatar("baris.jpg"), "123", "PERSONNEL");
